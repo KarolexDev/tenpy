@@ -1405,13 +1405,14 @@ class FermionSite(Site):
     ``dNdN``        :math:`(\delta n)^2`
     ==============  ===================================================================
 
-    ============== ====  ===============================
-    `conserve`     qmod  *excluded* onsite operators
-    ============== ====  ===============================
-    ``'N'``        [1]   --
-    ``'parity'``   [2]   --
-    ``'None'``     []    --
-    ============== ====  ===============================
+    ============== =======  ===============================
+    `conserve`     qmod     *excluded* onsite operators
+    ============== =======  ===============================
+    ``'dipole'``   [1, 1]   --
+    ``'N'``        [1]      --
+    ``'parity'``   [2]      --
+    ``'None'``     []       --
+    ============== =======  ===============================
 
     Parameters
     ----------
@@ -1432,7 +1433,7 @@ class FermionSite(Site):
     def __init__(self, conserve='N', filling=0.5):
         if not conserve:
             conserve = 'None'
-        if conserve not in ['N', 'parity', 'None']:
+        if conserve not in ['dipole', 'N', 'parity', 'None']:
             raise ValueError('invalid `conserve`: ' + repr(conserve))
         JW = np.array([[1.0, 0.0], [0.0, -1.0]])
         C = np.array([[0.0, 1.0], [0.0, 0.0]])
@@ -1441,7 +1442,13 @@ class FermionSite(Site):
         dN = np.array([[-filling, 0.0], [0.0, 1.0 - filling]])
         dNdN = dN**2  # (element wise power is fine since dN is diagonal)
         ops = dict(JW=JW, C=C, Cd=Cd, N=N, dN=dN, dNdN=dNdN)
-        if conserve == 'N':
+        if conserve == 'dipole':
+            chinfo = npc.DipolarChargeInfo([1, 1], ['N', 'dipole'], charge_idcs=[0], dipole_idcs=[1])
+            # define site at position 0 -> local dipole moments of all N sectors are 0
+            leg = npc.LegCharge.from_qflat(chinfo, [[0, 0], [1, 0]])
+            # the dipole charge does not contribute to the fermion parity
+            self.charge_to_JW_parity = np.array([1, 0])
+        elif conserve == 'N':
             chinfo = npc.ChargeInfo([1], ['N'])
             leg = npc.LegCharge.from_qflat(chinfo, [0, 1])
             self.charge_to_JW_parity = np.array([1])
