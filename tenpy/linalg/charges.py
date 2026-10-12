@@ -534,7 +534,7 @@ class DipolarChargeInfo(ChargeInfo):
             names = hdf5_loader.load(subpath + 'names')
         else:
             names = [''] * qnumber
-        obj.__setstate__((qnumber, qmod, names), (charge_idcs, dipole_idcs, dipole_dims))
+        obj.__setstate__(((qnumber, qmod, names), (charge_idcs, dipole_idcs, dipole_dims)))
         obj.test_sanity()
         return obj
 

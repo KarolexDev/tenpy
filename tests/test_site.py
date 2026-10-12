@@ -169,7 +169,7 @@ def test_spin_site():
 def test_fermion_site():
     hcs = dict(Id='Id', JW='JW', C='Cd', Cd='C', N='N', dN='dN', dNdN='dNdN')
     sites = []
-    for conserve in [None, 'N', 'parity']:
+    for conserve in [None, 'dipole', 'N', 'parity']:
         S = site.FermionSite(conserve)
         S.test_sanity()
         for op in S.onsite_ops:
